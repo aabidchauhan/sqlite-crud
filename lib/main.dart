@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   Contact _contact = Contact();
+  List<Contact> _contacts = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -100,12 +101,52 @@ class _MyHomePageState extends State<MyHomePage> {
   _onSubmit() {
     var form = _formKey.currentState;
     if (form.validate()) {
-      //validation call
       form.save();
-      print(_contact.name);
+      setState(() {
+        _contacts.add(
+            Contact(id: null, name: _contact.name, mobile: _contact.mobile));
+      });
+
+      form.reset();
     }
   }
 
   //List function
-  _list() => Container();
+  _list() => Expanded(
+          child: Card(
+        margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
+        child: ListView.builder(
+          padding: EdgeInsets.all(10.0),
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.account_circle,
+                    color: Colors.blueGrey,
+                    size: 40.0,
+                  ),
+                  title: Text(
+                    _contacts[index].name,
+                    style: TextStyle(
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    _contacts[index].mobile,
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                Divider(
+                  height: 5,
+                ),
+              ],
+            );
+          },
+          itemCount: _contacts.length,
+        ),
+      ));
 }
