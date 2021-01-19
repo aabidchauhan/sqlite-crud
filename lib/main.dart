@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_crud/models/contact.dart';
+import 'package:sqlite_crud/utils/database_helper.dart';
 
 const yellowColor = Color(0xff486579);
 void main() {
@@ -32,12 +33,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   Contact _contact = Contact();
   List<Contact> _contacts = [];
-
+  DatabaseHelper _dbHelper;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _dbHelper = DatabaseHelper.instance;
+    });
+    _refreshContactList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,16 +106,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
 
+  _refreshContactList() async {
+    List<Contact> x = await _dbHelper.fetchContact();
+    setState(() {
+      _contacts = x;
+    });
+  }
+
   //Button function
-  _onSubmit() {
+  _onSubmit() async {
     var form = _formKey.currentState;
     if (form.validate()) {
       form.save();
-      setState(() {
-        _contacts.add(
-            Contact(id: null, name: _contact.name, mobile: _contact.mobile));
-      });
-
+      await _dbHelper.insertContact(_contact);
+      _refreshContactList();
       form.reset();
     }
   }
