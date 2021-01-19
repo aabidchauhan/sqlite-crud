@@ -1,6 +1,5 @@
 class Contact {
-
-  Contact({this.id,this.name,this.mobile})
+  Contact({this.id, this.name, this.mobile});
 
   int id;
   String name;
